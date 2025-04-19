@@ -4,6 +4,7 @@ import logging
 import logging.config
 import threading
 import queue
+import os
 
 import cv2
 
@@ -101,6 +102,9 @@ def SensorThread(sensor: Sensor):
 
 def main(device: str, resolution: str, freq: float) -> int:
     global General
+    
+    if not os.path.exists("log"):
+        os.makedirs("log")
     
     logging.config.fileConfig("logging.conf")
     logger = logging.getLogger("my_logger")
