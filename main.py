@@ -66,7 +66,7 @@ class WindowImage:
         self.freq = freqency
         self._resolution = resolution
         self.org = (int(self._resolution[0] * 0.85), int(self._resolution[1] * 0.92))
-        self.msg_step = 30
+        self.msg_step = 10
 
     def __del__(self):
         cv2.destroyAllWindows()
@@ -85,7 +85,7 @@ class WindowImage:
                         f"sensor_{id}: {sensors[id]}",
                         (self.org[0], org_y),
                         fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                        fontScale=1, color=(0, 255, 0),
+                        fontScale=0.3, color=(0, 255, 0),
                         lineType=cv2.LINE_AA,
                         bottomLeftOrigin=False)
             org_y += self.msg_step
@@ -97,6 +97,8 @@ def SensorThread(sensor: Sensor):
     global General
     while not General.stop_flag.is_set():
         id, val = sensor.get()
+        if General.data_buffers[id].full():
+            General.data_buffers[id].get()
         General.data_buffers[id].put(val)
 
 
@@ -179,8 +181,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-d", "--device", type=str, help="Name of your video device", default="/dev/video0")
-    parser.add_argument("-r", "--resolution", type=str, help="Video resolution", default="1920x1440")
-    parser.add_argument("-f", "--freq", type=float, help="Video flow frequency", default=0.033)
+    parser.add_argument("-r", "--resolution", type=str, help="Video resolution", default="640x480")
+    parser.add_argument("-f", "--freq", type=float, help="Video flow frequency", default=1)
 
     args = parser.parse_args()
     
